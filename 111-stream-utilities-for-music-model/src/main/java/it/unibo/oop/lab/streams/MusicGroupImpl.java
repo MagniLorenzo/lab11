@@ -1,5 +1,7 @@
 package it.unibo.oop.lab.streams;
 
+import static java.util.stream.Collectors.averagingDouble;
+
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,42 +33,51 @@ public final class MusicGroupImpl implements MusicGroup {
 
     @Override
     public Stream<String> orderedSongNames() {
-        return null;
+        return songs.stream().map(s -> s.getSongName()).sorted();
     }
 
     @Override
     public Stream<String> albumNames() {
-        return null;
+        return albums.keySet().stream();
     }
 
     @Override
     public Stream<String> albumInYear(final int year) {
-        return null;
+        return albums.keySet().stream().filter(a -> albums.get(a).equals(year));
     }
 
     @Override
     public int countSongs(final String albumName) {
-        return -1;
+        return (int) songs.stream().filter(s -> s.getAlbumName().isPresent())
+                .filter(s -> s.getAlbumName().get().equals(albumName)).count();
     }
 
     @Override
     public int countSongsInNoAlbum() {
-        return -1;
+        return (int) songs.stream().filter(s -> s.getAlbumName().isEmpty()).count();
     }
 
     @Override
     public OptionalDouble averageDurationOfSongs(final String albumName) {
-        return null;
+        return OptionalDouble.of(songs.stream().filter(s -> s.getAlbumName().isPresent())
+                .filter(s -> s.getAlbumName().get().equals(albumName)).collect(averagingDouble(s -> s.getDuration())));
     }
 
     @Override
     public Optional<String> longestSong() {
-        return null;
+        return Optional.of(
+                songs.stream().max((s1, s2) -> Double.compare(s1.getDuration(), s2.getDuration())).get().getSongName());
     }
 
     @Override
     public Optional<String> longestAlbum() {
-        return null;
+        return albums.keySet().stream()
+                .max((a1, a2) -> Double.compare(songs.stream().filter(s -> s.getAlbumName().isPresent())
+                        .filter(s -> s.getAlbumName().get().equals(a1)).map(s -> s.getDuration())
+                        .reduce((d1, d2) -> d1 + d2).get(),
+                        songs.stream().filter(s -> s.getAlbumName().isPresent())
+                                .filter(s -> s.getAlbumName().get().equals(a2)).map(s -> s.getDuration())
+                                .reduce((d1, d2) -> d1 + d2).get()));
     }
 
     private static final class Song {
