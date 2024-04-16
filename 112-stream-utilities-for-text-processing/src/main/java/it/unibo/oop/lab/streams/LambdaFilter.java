@@ -7,6 +7,8 @@ import java.awt.GridLayout;
 import java.awt.LayoutManager;
 import java.awt.Toolkit;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -27,7 +29,8 @@ import javax.swing.JTextArea;
  *
  * 4) List all the words in alphabetical order
  * 
- * 5) Write the count for each word, e.g. "word word pippo" should output "pippo -> 1 word -> 2"
+ * 5) Write the count for each word, e.g. "word word pippo" should output "pippo
+ * -> 1 word -> 2"
  *
  */
 public final class LambdaFilter extends JFrame {
@@ -38,7 +41,21 @@ public final class LambdaFilter extends JFrame {
         /**
          * Commands.
          */
-        IDENTITY("No modifications", Function.identity());
+        IDENTITY("No modifications", Function.identity()),
+
+        TO_LOWERCASE("Convert to lowercase", str -> str.toLowerCase()),
+
+        CHARS_NUMBER("Count the number of chars", str -> String.valueOf(str.chars().count())),
+
+        LINE_NUMBER("Count the number of lines", str -> String.valueOf(str.chars()
+                .mapToObj(x -> String.valueOf((char) x)).filter(s -> s.equals("\n")).count() + 1)),
+
+        ALPHABETICAL_ORDER("List all the words in alphabetical order",
+                str -> Stream.of(str.split("[\\p{Punct}\\s]+")).sorted().collect(Collectors.joining(" "))),
+
+        COUNT_EACH_WORD("Write the count for each word", str -> Stream.of(str.split("[\\p{Punct}\\s]+"))
+                .collect(Collectors.groupingBy(s -> s, Collectors.counting())).entrySet().stream()
+                .map(e -> e.getKey().concat(" -> " + e.getValue().toString())).collect(Collectors.joining("\n")));
 
         private final String commandName;
         private final Function<String, String> fun;
