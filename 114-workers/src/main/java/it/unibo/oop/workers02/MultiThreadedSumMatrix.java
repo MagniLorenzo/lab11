@@ -10,7 +10,7 @@ public class MultiThreadedSumMatrix implements SumMatrix {
     /**
      * 
      * @param nthread
-     *            no. of thread performing the sum.
+     *                no. of thread performing the sum.
      */
     public MultiThreadedSumMatrix(final int nthread) {
         this.nthread = nthread;
@@ -49,16 +49,17 @@ public class MultiThreadedSumMatrix implements SumMatrix {
         @SuppressWarnings("PMD.SystemPrintln")
         public void run() {
             System.out.println("Working from position: (" + startelem / cols + ", " + startelem % cols
-                    + ") to position: (" + (startelem + nelem - 1) / cols + ", " + (startelem + nelem - 1) % cols + ")");
+                    + ") to position: (" + (startelem + nelem - 1) / cols + ", " + (startelem + nelem - 1) % cols
+                    + ")");
             for (int i = startelem; i < matrixElems && i < startelem + nelem; i++) {
                 this.res += this.matrix[i / this.cols][i % this.cols];
             }
         }
 
         /**
-         * Returns the result of summing up the integers within the list.
+         * Returns the result of summing up the values of the matrix.
          * 
-         * @return the sum of every element in the array
+         * @return the sum of every element in the matrix
          */
         public double getResult() {
             return this.res;
